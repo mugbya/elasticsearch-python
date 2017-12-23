@@ -16,12 +16,15 @@ class QueryBuilders(object):
         return self
 
     def __repr__(self):
-        return str(self.query)
+        return str(self.query).replace("'", '"')
 
 
-def size(query_dict, num):
-    query_dict.updata({'size', num})
-    return query_dict
+def match_all():
+    return MatchAllBuilder()
+
+
+def match(name, value, operator=None):
+    return MatchBuilder(name, value, operator=operator)
 
 
 def bool_query():
@@ -38,6 +41,25 @@ def query_string(name, value):
 
 def nested_query(path, qb):
     return NestedQueryBuilders(path, qb)
+
+
+class MatchAllBuilder(QueryBuilders):
+    def __init__(self):
+        self.query = {
+            "match_all":{}
+        }
+
+
+class MatchBuilder(QueryBuilders):
+    def __init__(self, name, value, operator=None):
+        self.query = {
+            "match": {
+                name: {
+                    "query": value,
+                    "operator": operator
+                }
+            }
+        }
 
 
 class BoolQueryBuilder(QueryBuilders):
